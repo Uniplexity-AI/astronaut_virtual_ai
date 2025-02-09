@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D AI Virtual Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/",
+            "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.2/+esm"
+          }
+        }
+    </script>
+    <style>
+         body { margin: 0; overflow: hidden; background: transparent; }
+        .chat-message {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+        .bot-message {
+            background-color: black;
+            align-self: flex-start;
+        }
+        .user-message {
+            background-color: black;
+            align-self: flex-end;
+        }
+        .chat-container {
+            order: 7px solid #4299e1;
+            border-radius: 12px;
+            background-color: black;
+            padding: 20px;
+            background: #2e2e2e;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 400px;
+            position: absolute;
+            left: 20px;
+            top: 20px;
+        }
+        #response {
+            height: 400px;
+            padding: 16px;
+        }
+        .message-row {
+            display: flex;
+            align-items: flex-start;
+            margin: 8px 0;
+        }
+        .avatar {
+            width: 24px;
+            height: 24px;
+            margin: 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .input-container {
+            border-top: 1px solid #eee;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+        }
+        #user-message {
+            border: none;
+            padding: 8px 12px;
+            flex-grow: 1;
+            margin-right: 8px;
+            font-size: 14px;
+        }
+        #user-message:focus {
+            outline: none;
+        }
+        .action-button {
+            background-color: #4285f4;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        /* body { margin: 0; overflow: hidden; }
+        .chat-message {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+        .user-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+        }
+        .message-container {
+            display: flex;
+            align-items: flex-start;
+            margin: 10px 0;
+        }
+        .chat-container {
+            border: 2px solid #4299e1;
+            border-radius: 12px;
+            background-color: white;
+            padding: 20px;
+        }
+        #response {
+            height: calc(100vh - 200px);
+        } */
+    </style>
+</head>
+<body class=" text-white flex">
+    <!-- 3D Model Container -->
+    <div class="w-[65%] h-screen" id="three-container"></div>
+    
+    <!-- Chatroom -->
+    <!-- <div class="w-[35%] h-screen bg-gray-800 p-6 flex flex-col"> -->
+        <div class="chat-container">
+        <div class="chat-container flex-1 flex flex-col">
+            <div id="response" class="flex-1 overflow-y-auto p-4 space-y-2">
+                <!-- Chat messages will be inserted here by JavaScript -->
+            </div>
+            <div class="mt-4 flex items-center">
+                <input 
+                    id="user-message" 
+                    type="text" 
+                    placeholder="Message Chatbot" 
+                    class="flex-1 p-3 border rounded-lg text-gray-800 focus:outline-none focus:border-blue-400"
+                />
+                <button id="send-button" class="ml-2 p-3 bg-blue-500 hover:bg-blue-600 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                </button>
+                <button id="speakBtn" class="ml-2 p-3 bg-blue-500 hover:bg-blue-600 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                    </svg>
+                </button>
+                <button id="stopBtn" class="ml-2 p-3 bg-red-500 hover:bg-red-600 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6h12v12H6z"/>
+                    </svg>
+                </button>                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial chat messages
+        const initialMessages = [
+            { sender: 'bot', text: 'Hello. How are you?' },
+            { sender: 'user', text: 'I am okay. How are you?' },
+            { sender: 'bot', text: 'Teach me about robotics.' },
+            { sender: 'user', text: 'Okay! What would you like to know?' }
+        ];
+
+        // const responseDiv = document.getElementById('response');
+        // const userInput = document.getElementById('user-message');
+        // const sendButton = document.getElementById('send-button');
+
+        // Function to create message HTML
+        function createMessageElement(message) {
+    const messageContainer = document.createElement('div');
+    messageContainer.className = 'message-container';
+
+    const icon = document.createElement('div');
+    icon.className = 'user-icon';
+    icon.innerHTML = message.sender === 'bot' 
+        ? '<svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>'
+        : '<svg class="w-6 h-6 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zm0 2a6 6 0 016 6H2a6 6 0 016-6z"/></svg>';
+
+    const messageText = document.createElement('div');
+    messageText.className = `chat-message ${message.sender === 'bot' ? 'bg-gray-100' : 'bg-blue-100'}`;
+    messageText.textContent = message.text;
+    messageText.style.color = 'black'; // Explicitly set text color to black
+
+    messageContainer.appendChild(icon);
+    messageContainer.appendChild(messageText);
+    return messageContainer;
+}
+
+        // Function to add a message to the chat
+        function addMessage(message) {
+            const messageElement = createMessageElement(message);
+            responseDiv.appendChild(messageElement);
+            responseDiv.scrollTop = responseDiv.scrollHeight;
+        }
+
+        // Initialize chat with initial messages
+        initialMessages.forEach(message => addMessage(message));
+
+        // Handle sending messages
+        function sendMessage() {
+            const text = userInput.value.trim();
+            if (text) {
+                addMessage({ sender: 'user', text });
+                userInput.value = '';
+                
+                // Simulate bot response
+                setTimeout(() => {
+                    addMessage({ 
+                        sender: 'bot', 
+                        text: 'This is a simulated response.' 
+                    });
+                }, 1000);
+            }
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+
+    <script type="module" src="3dmove.js"></script>
+   
+    <script src="speak.js"></script>
+</body>
+<script src="chat.js"></script>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "3d-virtual-assistant-ai",
+  "version": "1.0.0",
+  "description": "The **3D Virtual Assistant AI for Astronauts** is an advanced AI-powered system designed to assist astronauts in space missions by providing real-time voice interaction, facial animations, and intelligent responses. This system integrates **AI Large Language Models (LLMs)**, **Python FastAPI**, **React**, **Three.js**, and **Text-to-Speech (TTS)** to create an immersive and interactive experience.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "groq-sdk": "^0.13.0",
+    "gtts": "^0.2.1"
+  }
+}

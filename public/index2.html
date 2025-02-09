@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D AI Virtual Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.155.0/examples/jsm/",
+            "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.2/+esm"
+          }
+        }
+    </script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex">
+    <!-- 3D Model Container -->
+    <div class="w-[65%] h-screen" id="three-container"></div>
+    
+    <!-- Chatroom -->
+    <div class="w-[35%] h-screen bg-gray-800 p-6 flex flex-col">
+        <h2 class="text-2xl font-bold text-center mb-4">Chat with AI</h2>
+        <div id="response" class="flex-1 overflow-y-auto bg-gray-700 p-4 rounded text-lg"></div>
+        <div class="mt-2 flex">
+            <input id="user-message"" type="text" placeholder="Type a message..." class="flex-1 p-3 bg-gray-600 rounded text-white text-lg"/>
+            <button id="send-button" class="ml-2 p-3 bg-blue-500 hover:bg-blue-600 rounded text-lg">Send</button>
+			<button id="speakBtn" class="ml-2 p-3 bg-blue-500 hover:bg-blue-600 rounded text-lg">Speak</button>
+        </div>
+    </div>
+
+    <!-- <script type="module" src="3dmain.js"></script> -->
+    <script type="module" src="3dmove.js"></script>
+	<script type="module" src="chat.js"></script>
+	<script type="module" src="speak.js"></script>
+</body>
+</html
